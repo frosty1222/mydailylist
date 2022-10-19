@@ -15,8 +15,15 @@
                         <input type="checkbox">
                         <span>{{task.name}}-at-{{task.time}}</span>
                         <span class="delete-btn" title="Delete Task" @click="delItem(task.id)">{{task.del}}</span>
+                        <span class="edit-btn" title="Edit Task" @click="getId(task.id)">{{task.del}}</span>
                     </label>
                </li>
+               <form action="#"  v-for="i in idTask" :key="i.index">
+                    <legend>Edit Task</legend>
+                    <input type="text" name="name" v-model="i.name">
+                    <input type="text" name="time" v-model="i.time">
+                    <button id="button-edit" @click="editTask(i.id,i.name,i.time)">Save</button>
+               </form>
         </ul>
     </div>
 </div>
@@ -24,6 +31,7 @@
 </template>
 <script>
 import jQuery from "jquery";
+import axios from "axios";
 const $ = jQuery;
 window.$ = $;
 export default {
@@ -32,25 +40,51 @@ export default {
             title:'to do list',
             tasks:[],
             newtask:{name:'',time:''},
+            idTask:[],
         }
     },
     methods:{
          getItem(){
-             this.axios.get('http://localhost:3000/tasks')
+             axios.get('http://localhost:3000/tasks')
              .then(response => (this.tasks = response.data));
             //  console.log(this.tasks);
          },
          getPost(){
-             this.axios.post('http://localhost:3000/tasks',this.newtask)
+            if(this.newtask.name =="" | this.newtask.time == "" ){
+                alert('please write a task name and time can not be null');
+            }else{
+               axios.post('http://localhost:3000/tasks',this.newtask)
              .then(
                 response =>{
-                    (this.tasks = response.data)
+                    if(response.data == null){
+                        alert("No data");
+                    }else{
+                       (this.tasks = response.data)
+                    }
                     this.getItem();
                 } 
              ); 
+            }
+         },
+         getId(id){
+               axios.get('http://localhost:3000/tasks?id='+id).then(response=>{
+                  this.idTask = response.data
+                  console.log(this.idTask);
+               }).catch(err=>{
+                console.log(err)
+               });
+         },
+         editTask(id,name,time){
+                  axios.put('http://localhost:3000/tasks/'+id,{
+                       name:name,
+                       time:time
+                  }).then(response=>{
+                    console.log(response)
+                  }).catch(err=>{
+                console.log(err)})
          },
         delItem:function(id) {
-         this.axios.delete('http://localhost:3000/tasks/'+id)
+         axios.delete('http://localhost:3000/tasks/'+id)
         .then(response => {
          this.tasks.splice(id, 1);
          this.tasks= response.data;
@@ -96,6 +130,12 @@ input{
 ul{
     list-style:none;
     padding:0;
+}
+#button-edit{
+    background-color:greenyellow;
+    width:50px;
+    height: 30px;
+    border-radius:10px;
 }
 .todo .app-container{
     max-width: 480px;
@@ -209,6 +249,19 @@ ul{
     width:16px;
     height:16px;
     background-image:url('https://w1.pngwing.com/pngs/431/160/png-transparent-icon-design-trash-red-line-area-material-rectangle-thumbnail.png');
+    background-repeat:no-repeat;
+    background-size:16px;
+    background-position:center;
+    cursor:pointer;
+}
+.edit-btn{
+    margin-left: auto;
+    margin-right: 5px;
+    display:block;
+    margin-top:5px;
+    width:16px;
+    height:16px;
+    background-image:url("../../public/images/edit.png");
     background-repeat:no-repeat;
     background-size:16px;
     background-position:center;

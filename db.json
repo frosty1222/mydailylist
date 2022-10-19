@@ -11,14 +11,9 @@
       "id": 2
     },
     {
-      "name": "eating",
+      "name": "eating and washing dish",
       "time": "7 pm",
       "id": 3
-    },
-    {
-      "name": "go to school ",
-      "time": "1:30pm",
-      "id": 4
     }
   ]
 }
